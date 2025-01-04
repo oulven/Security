@@ -1,0 +1,21 @@
+#!/bin/bash
+#New config
+Firewall-cmd  --list-all
+#--zone=zonename
+#--permanent
+# Making New Interface
+sudo firewall-cmd --set-default-zone=drop
+# SMTP
+sudo firewall-cmd --zone=public --add-port=25/tcp --permanent
+# POP3
+sudo firewall-cmd --zone=public --add-port=110/tcp --permanent
+# Encpyt POP3
+sudo firewall-cmd --zone=drop --add-port=995/tcp --permanent
+# LDAP
+sudo firewall-cmd --zone=drop --add-port=636/tcp --permanent
+# Changes Old Interfaces
+sudo firewall-cmd --zone=drop --change-interface=<interface-name> --permanent
+# Commits
+sudo firewall-cmd --reload
+# Checking
+sudo firewall-cmd --list-all
