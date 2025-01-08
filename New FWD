@@ -16,10 +16,10 @@ sudo firewall-cmd --zone=trusted --add-service=smtp
 sudo firewall-cmd --zone=trusted --add-service=pop3
 sudo firewall-cmd --zone=trusted --add-service=imap
 
-# Additional Services Auth and NTP
+# Additional Services Auth, NTP, and Splunk
 sudo firewall-cmd --zone=trusted --add-service=ldap
 sudo firewall-cmd --zone=trusted --add-service=ntp
-
+sudo firewall-cmd --permanent --add-port=9997/tcp
 
 # Step 3: Set Default Zone to Drop
 sudo firewall-cmd --set-default-zone=drop
