@@ -1,4 +1,4 @@
-
+#!/bin/bash
 # Step 6: Verify Changes
 sudo firewall-cmd --zone=drop --list-all
 sudo firewall-cmd --zone=trusted --list-all
