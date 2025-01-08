@@ -1,21 +1,35 @@
 #!/bin/bash
-#New config
-Firewall-cmd  --list-all
-#--zone=zonename
-#--permanent
-# Making New Interface
+# Step 1: Backup Current Configurations
+# Find current zones and interfaces
+
+sudo firewall-cmd --get-active-zones
+# Backup current configurations for zones and interfaces
+sudo firewall-cmd --zone=public --list-all > backup-public-zone.txt
+sudo firewall-cmd --zone=drop --list-all > backup-drop-zone.txt
+sudo firewall-cmd --zone=public --list-interfaces > backup-interfaces.txt
+
+# Step 2: Secure Services Instead of Ports
+# SMTP (Postfix) - Limit access to authenticated users
+sudo firewall-cmd --zone=trusted --add-service=smtp
+
+# POP3 and IMAP (Dovecot)
+sudo firewall-cmd --zone=trusted --add-service=pop3
+sudo firewall-cmd --zone=trusted --add-service=imap
+
+# Additional Services Auth and NTP
+sudo firewall-cmd --zone=trusted --add-service=ldap
+sudo firewall-cmd --zone=trusted --add-service=ntp
+
+
+# Step 3: Set Default Zone to Drop
 sudo firewall-cmd --set-default-zone=drop
-# SMTP
-sudo firewall-cmd --zone=public --add-port=25/tcp --permanent
-# POP3
-sudo firewall-cmd --zone=public --add-port=110/tcp --permanent
-# Encpyt POP3
-sudo firewall-cmd --zone=drop --add-port=995/tcp --permanent
-# LDAP
-sudo firewall-cmd --zone=drop --add-port=636/tcp --permanent
-# Changes Old Interfaces
-sudo firewall-cmd --zone=drop --change-interface=<interface-name> --permanent
-# Commits
-sudo firewall-cmd --reload
-# Checking
-sudo firewall-cmd --list-all
+
+# Step 4: Assign NIC to Appropriate Zone
+sudo firewall-cmd --zone=drop --change-interface=eth1
+
+# Step 5: Log Denied Packets
+sudo firewall-cmd --set-log-denied=all
+
+# Step 6: Verify Changes
+sudo firewall-cmd --zone=drop --list-all
+sudo firewall-cmd --zone=trusted --list-all
