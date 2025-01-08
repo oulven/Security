@@ -1,0 +1,3 @@
+#!/bin/bash
+# Step 8: Monitor Logs
+tail -f /var/log/firewalld
