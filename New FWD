@@ -1,35 +1,33 @@
 #!/bin/bash
-# Step 1: Backup Current Configurations
-# Find current zones and interfaces
+sudo firewall-cmd --set-default-zone=block  
 
-sudo firewall-cmd --get-active-zones
-# Backup current configurations for zones and interfaces
-sudo firewall-cmd --zone=public --list-all > backup-public-zone.txt
-sudo firewall-cmd --zone=drop --list-all > backup-drop-zone.txt
-sudo firewall-cmd --zone=public --list-interfaces > backup-interfaces.txt
+# Remove SSH access  
+sudo firewall-cmd --remove-port=22/tcp  
 
-# Step 2: Secure Services Instead of Ports
-# SMTP (Postfix) - Limit access to authenticated users
-sudo firewall-cmd --zone=trusted --add-service=smtp
+# Add source rules  
+sudo firewall-cmd --zone=block --add-source=172.20.241.30  
+sudo firewall-cmd --zone=block --add-rich-rule='rule family="ipv4" source address="172.20.242.200" port protocol="tcp" port="389" accept'  
+sudo firewall-cmd --zone=block --add-rich-rule='rule family="ipv4" source address="172.20.241.20" port protocol="tcp" port="9997" accept'  
 
-# POP3 and IMAP (Dovecot)
-sudo firewall-cmd --zone=trusted --add-service=pop3
-sudo firewall-cmd --zone=trusted --add-service=imap
+# Add mail-related services  
+sudo firewall-cmd --zone=block --add-service=smtp      # Postfix  
+sudo firewall-cmd --zone=block --add-service=pop3      # Dovecot  
+sudo firewall-cmd --zone=block --add-service=pop3s     # Encrypted POP3  
+sudo firewall-cmd --zone=block --add-service=imap      # IMAP  
+sudo firewall-cmd --zone=block --add-service=imaps     # Encrypted IMAP  
+sudo firewall-cmd --zone=block --add-service=dns       # DNS for mail resolution  
 
-# Additional Services Auth, NTP, and Splunk
-sudo firewall-cmd --zone=trusted --add-service=ldap
-sudo firewall-cmd --zone=trusted --add-service=ntp
-sudo firewall-cmd --permanent --add-port=9997/tcp
+# Add specific mail-related ports  
+sudo firewall-cmd --zone=block --add-port=25/tcp       # SMTP  
+sudo firewall-cmd --zone=block --add-port=110/tcp      # POP3  
+sudo firewall-cmd --zone=block --add-port=995/tcp      # POP3S  
+sudo firewall-cmd --zone=block --add-port=143/tcp      # IMAP  
+sudo firewall-cmd --zone=block --add-port=993/tcp      # IMAPS  
+sudo firewall-cmd --zone=block --add-port=53/tcp       # DNS over TCP  
+sudo firewall-cmd --zone=block --add-port=53/udp       # DNS over UDP  
 
-# Step 3: Set Default Zone to Drop
-sudo firewall-cmd --set-default-zone=drop
+# Enable logging for denied packets  
+sudo firewall-cmd --set-log-denied=all  
 
-# Step 4: Assign NIC to Appropriate Zone
-sudo firewall-cmd --zone=drop --change-interface=eth1
-
-# Step 5: Log Denied Packets
-sudo firewall-cmd --set-log-denied=all
-
-# Step 6: Verify Changes
-sudo firewall-cmd --zone=drop --list-all
-sudo firewall-cmd --zone=trusted --list-all
+# Monitor the firewall logs  
+tail -f /var/log/firewalld
