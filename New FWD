@@ -5,7 +5,6 @@ sudo firewall-cmd --set-default-zone=block
 sudo firewall-cmd --remove-port=22/tcp  
 
 # Add source rules  
-sudo firewall-cmd --zone=block --add-source=172.20.241.30  
 sudo firewall-cmd --zone=block --add-rich-rule='rule family="ipv4" source address="172.20.242.200" port protocol="tcp" port="389" accept'  
 sudo firewall-cmd --zone=block --add-rich-rule='rule family="ipv4" source address="172.20.241.20" port protocol="tcp" port="9997" accept'  
 
