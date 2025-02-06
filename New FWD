@@ -30,4 +30,4 @@ sudo firewall-cmd --zone=block --add-port=53/udp       # DNS over UDP
 sudo firewall-cmd --set-log-denied=all  
 
 # Monitor the firewall logs  
-tail -f /var/log/firewalld
+sudo tail -f ../../var/log/firewalld
