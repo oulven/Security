@@ -1,32 +1,37 @@
 #!/bin/bash
-sudo firewall-cmd --set-default-zone=block  
 
-# Remove SSH access  
-sudo firewall-cmd --remove-port=22/tcp  
+# Set the default zone to 'block' permanently
+sudo firewall-cmd --set-default-zone=block --permanent
 
-# Add source rules  
-sudo firewall-cmd --zone=block --add-rich-rule='rule family="ipv4" source address="172.20.242.200" port protocol="tcp" port="389" accept'  
-sudo firewall-cmd --zone=block --add-rich-rule='rule family="ipv4" source address="172.20.241.20" port protocol="tcp" port="9997" accept'  
+# Remove SSH service explicitly
+sudo firewall-cmd --zone=block --remove-service=ssh --permanent
 
-# Add mail-related services  
-sudo firewall-cmd --zone=block --add-service=smtp      # Postfix  
-sudo firewall-cmd --zone=block --add-service=pop3      # Dovecot  
-sudo firewall-cmd --zone=block --add-service=pop3s     # Encrypted POP3  
-sudo firewall-cmd --zone=block --add-service=imap      # IMAP  
-sudo firewall-cmd --zone=block --add-service=imaps     # Encrypted IMAP  
-sudo firewall-cmd --zone=block --add-service=dns       # DNS for mail resolution  
+# Remove SSH access by port
+sudo firewall-cmd --zone=block --remove-port=22/tcp --permanent
 
-# Add specific mail-related ports  
-sudo firewall-cmd --zone=block --add-port=25/tcp       # SMTP  
-sudo firewall-cmd --zone=block --add-port=110/tcp      # POP3  
-sudo firewall-cmd --zone=block --add-port=995/tcp      # POP3S  
-sudo firewall-cmd --zone=block --add-port=143/tcp      # IMAP  
-sudo firewall-cmd --zone=block --add-port=993/tcp      # IMAPS  
-sudo firewall-cmd --zone=block --add-port=53/tcp       # DNS over TCP  
-sudo firewall-cmd --zone=block --add-port=53/udp       # DNS over UDP  
+# Add source-based access rules permanently
+sudo firewall-cmd --zone=block --add-rich-rule='rule family="ipv4" source address="172.20.242.200" port protocol="tcp" port="389" accept' --permanent
+sudo firewall-cmd --zone=block --add-rich-rule='rule family="ipv4" source address="172.20.241.20" port protocol="tcp" port="9997" accept' --permanent
 
-# Enable logging for denied packets  
-sudo firewall-cmd --set-log-denied=all  
+# Add mail-related services permanently
+sudo firewall-cmd --zone=block --add-service=smtp --permanent      # Postfix
+sudo firewall-cmd --zone=block --add-service=pop3 --permanent      # Dovecot
+sudo firewall-cmd --zone=block --add-service=pop3s --permanent     # Encrypted POP3
+sudo firewall-cmd --zone=block --add-service=imap --permanent      # IMAP
+sudo firewall-cmd --zone=block --add-service=imaps --permanent     # Encrypted IMAP
+sudo firewall-cmd --zone=block --add-service=dns --permanent       # DNS for mail resolution
 
-# Monitor the firewall logs  
-sudo tail -f ../../var/log/firewalld
+# Add specific mail-related ports permanently
+sudo firewall-cmd --zone=block --add-port=25/tcp --permanent       # SMTP
+sudo firewall-cmd --zone=block --add-port=110/tcp --permanent      # POP3
+sudo firewall-cmd --zone=block --add-port=995/tcp --permanent      # POP3S
+sudo firewall-cmd --zone=block --add-port=143/tcp --permanent      # IMAP
+sudo firewall-cmd --zone=block --add-port=993/tcp --permanent      # IMAPS
+sudo firewall-cmd --zone=block --add-port=53/tcp --permanent       # DNS over TCP
+sudo firewall-cmd --zone=block --add-port=53/udp --permanent       # DNS over UDP
+
+# Enable logging for denied packets permanently
+sudo firewall-cmd --set-log-denied=all --permanent
+
+# Reload firewall to apply changes
+sudo firewall-cmd --reload
