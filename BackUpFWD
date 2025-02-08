@@ -3,7 +3,3 @@
 sudo firewall-cmd --zone=drop --list-interfaces
 # Makes a back up
 sudo firewall-cmd --zone=drop --list-interfaces > backup-interfaces.txt
-# Makes interfaces set to new
-sudo firewall-cmd --zone=drop --change-interface=<old-interface-name> --permanent
-# Reload
-sudo firewall-cmd --reload
