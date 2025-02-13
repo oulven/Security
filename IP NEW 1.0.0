@@ -18,6 +18,9 @@ sudo iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 # Allow ICMP (Ping)
 sudo iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT
 
+# Allow LMTP (port 24)
+sudo iptables -A INPUT -p tcp --dport 24 -j ACCEPT
+
 # Allow SMTP (port 25)
 sudo iptables -A INPUT -p tcp --dport 25 -j ACCEPT
 
@@ -41,6 +44,12 @@ sudo iptables -A INPUT -p tcp --dport 389 -j ACCEPT
 
 # Allow Secure LDAP (LDAPS, port 636)
 sudo iptables -A INPUT -p tcp --dport 636 -j ACCEPT
+
+# Allow HTTP (port 80)
+sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+
+# Allow HTTPS (port 443)
+sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT
 
 # Allow Splunk Forwarder (port 9997)
 sudo iptables -A INPUT -p tcp --dport 9997 -j ACCEPT
