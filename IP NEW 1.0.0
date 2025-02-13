@@ -61,6 +61,9 @@ sudo iptables -A INPUT -p tcp --dport 3306 -j ACCEPT
 sudo iptables -A INPUT -p tcp --dport 53 -j ACCEPT
 sudo iptables -A INPUT -p udp --dport 53 -j ACCEPT
 
+# Allow port 9090
+sudo iptables -A INPUT -p tcp --dport 9090 -j ACCEPT
+
 # Block SSH (port 22) completely
 sudo iptables -A INPUT -p tcp --dport 22 -j DROP
 
