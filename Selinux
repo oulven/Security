@@ -30,6 +30,12 @@ echo "Configuring SELinux rules for mail services..."
 semanage permissive -a dovecot_t
 semanage permissive -a postfix_t
 
+# Allow Splunk Forwarder access to /opt
+echo "Configuring SELinux for Splunk Forwarder..."
+semanage fcontext -a -t splunkd_t '/opt(/.*)?'
+restorecon -R /opt
+semanage permissive -a splunkd_t
+
 echo "Configuration complete. Here are some troubleshooting commands:"
 
 echo "
@@ -48,6 +54,11 @@ echo "
 - Check SELinux status: getenforce
 - List SELinux mail policies: semanage boolean -l | grep mail
 - Check denials: ausearch -m AVC,USER_AVC,SELINUX_ERR -ts recent | audit2why
+
+--- Splunk Troubleshooting ---
+- Check SELinux labels: ls -Z /opt
+- Restart Splunk: systemctl restart SplunkForwarder
+- View Splunk logs: journalctl -u SplunkForwarder --no-pager
 "
 
 echo "Done!"
