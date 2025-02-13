@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# Ensure the script is run as root
+if [[ $EUID -ne 0 ]]; then
+    echo "This script must be run as root"
+    exit 1
+fi
+
+echo "Updating system and installing required packages..."
+yum update -y
+yum install -y selinux-policy-targeted postfix dovecot
+
+# Ensure SELinux is enforcing
+echo "Setting SELinux to enforcing mode..."
+setenforce 1
+sed -i 's/^SELINUX=.*/SELINUX=enforcing/' /etc/selinux/config
+
+# Enable and start Postfix
+echo "Enabling and starting Postfix..."
+systemctl enable postfix
+systemctl start postfix
+
+# Enable and start Dovecote
+echo "Enabling and starting Dovecote..."
+systemctl enable dovecot
+systemctl start dovecot
+
+# Configure SELinux for Postfix and Dovecote
+echo "Configuring SELinux rules for mail services..."
+semanage permissive -a dovecot_t
+semanage permissive -a postfix_t
+
+echo "Configuration complete. Here are some troubleshooting commands:"
+
+echo "
+--- Postfix Troubleshooting ---
+- Check status: systemctl status postfix
+- View logs: journalctl -u postfix --no-pager
+- Test sending mail: echo 'Test email' | mail -s 'Test' user@example.com
+- Check mail queue: mailq
+
+--- Dovecote Troubleshooting ---
+- Check status: systemctl status dovecot
+- View logs: journalctl -u dovecot --no-pager
+- Test authentication: doveadm auth test user@example.com password
+
+--- SELinux Troubleshooting ---
+- Check SELinux status: getenforce
+- List SELinux mail policies: semanage boolean -l | grep mail
+- Check denials: ausearch -m AVC,USER_AVC,SELINUX_ERR -ts recent | audit2why
+"
+
+echo "Done!"
